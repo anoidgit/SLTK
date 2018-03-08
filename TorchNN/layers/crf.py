@@ -127,10 +127,11 @@ class CRF(nn.Module):
         back_points = list()
         partition_history = list()
 
-        mask = 1 + (-1) * mask
+        mask = mask.new().resize_as_(mask).fill_(1) - mask
+
         _, inivalues = seq_iter.__next__()
 
-        partition = inivalues[:, self.START_TAG_IDX, :].clone().view(batch_size, tag_size, 1)
+        partition = inivalues[:, self.START_TAG_IDX, :].clone().view(batch_size, tag_size)
         partition_history.append(partition)
 
         for idx, cur_values in seq_iter:
@@ -172,7 +173,7 @@ class CRF(nn.Module):
         decode_idx[-1] = pointer.data
         for idx in range(len(back_points)-2, -1, -1):
             pointer = torch.gather(back_points[idx], 1, pointer.contiguous().view(batch_size, 1))
-            decode_idx[idx] = pointer.data
+            decode_idx[idx] = pointer.data.view(batch_size)
         path_score = None
         decode_idx = decode_idx.transpose(1, 0)
         return path_score, decode_idx

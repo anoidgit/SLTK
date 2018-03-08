@@ -38,7 +38,7 @@ op.add_option('--mp', dest='max_patience', default=5,
 op.add_option('--rm', dest='root_model', default='./model/',
               type='str', help='模型根目录')
 op.add_option('--bs', dest='batch_size', default=64, type='int', help='batch size')
-op.add_option('-g', '--cuda', dest='cuda', action='store_true', default=False, help='是否使用GPU加速')
+op.add_option('-g', '--cuda', dest='cuda', action='store_true', default=True, help='是否使用GPU加速')
 op.add_option('--nw', dest='nb_work', default=8, type='int', help='加载数据的线程数')
 argv = [] if is_interactive() else sys.argv[1:]
 (opts, args) = op.parse_args(argv)
@@ -89,7 +89,7 @@ for i, feature_name in enumerate(features):
 if pretrained_embed is not None:  # 以预训练向量维度为准
     feature_dim_dict[features[0]] = pretrained_embed.shape[-1]
 dropout_rate = opts.dropout
-use_cuda = opts.cuda
+use_cuda = True
 kwargs = {'features': features, 'lstm_units': opts.lstm, 'layer_nums': opts.layer_nums,
           'feature_size_dict': feature_size_dict, 'feature_dim_dict': feature_dim_dict,
           'pretrained_embed': pretrained_embed, 'dropout_rate': dropout_rate,
@@ -101,6 +101,8 @@ sl_model = SLModel(kwargs)
 print(sl_model)
 if use_cuda:
     sl_model = sl_model.cuda()
+# 自己在这里调整了adam设置，开启了ams
+#optimizer = torch.optim.Adam(sl_model.parameters(), lr=opts.learn_rate, amsgrad=True)
 optimizer = torch.optim.Adam(sl_model.parameters(), lr=opts.learn_rate)
 criterion = torch.nn.NLLLoss(ignore_index=0)
 

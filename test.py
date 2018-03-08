@@ -20,7 +20,7 @@ op.add_option('--pm', '--path_model', dest='path_model', default='./model/sl.mod
               type='str', help='模型路径')
 op.add_option('--ml', dest='max_len', default=None, type='int', help='实例最大长度')
 op.add_option('--bs', '--batch_size', dest='batch_size', default=64, type='int', help='batch size')
-op.add_option('-g', '--cuda', dest='cuda', action='store_true', default=False, help='是否使用GPU加速')
+op.add_option('-g', '--cuda', dest='cuda', action='store_true', default=True, help='是否使用GPU加速')
 op.add_option('--nw', dest='nb_work', default=8, type='int', help='加载数据的线程数')
 op.add_option('-o', '--output', dest='output', default='./result.txt',
               type='str', help='预测结果存放路径')
